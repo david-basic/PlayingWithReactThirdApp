@@ -51,10 +51,10 @@ const AddUser = (props) => {
 
     const errorHandler = () => {
         setError(null);
-    }
+    };
 
     return (
-        <div>
+        <>
             {error && (
                 <ErrorModal
                     errorTitle={error.errorTitle}
@@ -83,7 +83,7 @@ const AddUser = (props) => {
                     <Button type="submit">Add user</Button>
                 </form>
             </Card>
-        </div>
+        </>
     );
 };
 
