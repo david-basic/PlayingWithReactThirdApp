@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import styleClasses from "./AddUser.module.css";
 import Card from "../UI/Card";
@@ -6,16 +6,20 @@ import Button from "../UI/Button";
 import ErrorModal from "../UI/ErrorModal";
 
 const AddUser = (props) => {
-    const [enteredUsername, setEnteredUsername] = useState("");
-    const [enteredAge, setEnteredAge] = useState("");
+    const nameInputRef = useRef();
+    const ageInputRef = useRef();
+
     const [error, setError] = useState();
 
     const addUserHandler = (event) => {
         event.preventDefault();
 
+        const enteredName = nameInputRef.current.value;
+        const enteredUserAge = ageInputRef.current.value;
+
         if (
-            enteredUsername.trim().length === 0 ||
-            enteredAge.trim().length === 0
+            enteredName.trim().length === 0 ||
+            enteredUserAge.trim().length === 0
         ) {
             setError({
                 errorTitle: "Invalid input!",
@@ -24,8 +28,8 @@ const AddUser = (props) => {
             return;
         }
 
-        if (+enteredAge < 1) {
-            // by adding a plus, I force enteredAge to be a num instead of string by default
+        if (+enteredUserAge < 1) {
+            // by adding a plus, I force enteredUserAge to be a num instead of string by default
             setError({
                 errorTitle: "Invalid input!",
                 errorMessage: "Please enter age greater then 0.",
@@ -33,20 +37,12 @@ const AddUser = (props) => {
             return;
         }
 
-        props.onAddUser(enteredUsername, enteredAge); // passing data to app so it can be displayed in another component
-
-        setEnteredUsername("");
-        setEnteredAge("");
-    };
-
-    const usernameChangeHandler = (event) => {
-        setEnteredUsername(event.target.value);
-        console.log(enteredUsername);
-    };
-
-    const ageChangeHandler = (event) => {
-        setEnteredAge(event.target.value);
-        console.log(enteredAge);
+        props.onAddUser(enteredName, enteredUserAge); // passing data to app so it can be displayed in another component
+        
+        // usually not okay to change state of a DOM object using refs but here
+        // it is oke since we are changing the user input not the element itself
+        nameInputRef.current.value = "";
+        ageInputRef.current.value = "";
     };
 
     const errorHandler = () => {
@@ -65,20 +61,10 @@ const AddUser = (props) => {
             <Card className={styleClasses.input}>
                 <form onSubmit={addUserHandler}>
                     <label htmlFor="username">Username</label>
-                    <input
-                        id="username"
-                        type="text"
-                        onChange={usernameChangeHandler}
-                        value={enteredUsername}
-                    />
+                    <input id="username" type="text" ref={nameInputRef} />
 
                     <label htmlFor="age">Age (Years)</label>
-                    <input
-                        id="age"
-                        type="number"
-                        onChange={ageChangeHandler}
-                        value={enteredAge}
-                    />
+                    <input id="age" type="number" ref={ageInputRef} />
 
                     <Button type="submit">Add user</Button>
                 </form>
